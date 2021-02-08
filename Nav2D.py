@@ -7,8 +7,8 @@ Created on Tue Jan  8 19:33:29 2019
 
 import torch
 import numpy as np
-from matplotlib.pyplot import imshow
-import matplotlib as plt
+# from matplotlib.pyplot import imshow
+# import matplotlib as plt
 from copy import deepcopy as dc
 
 class Navigate2D:
@@ -40,6 +40,8 @@ class Navigate2D:
             finish = free_idx[np.random.randint(0,free_idx.shape[0],1),:].squeeze()
             if ((start[0] != finish[0]) and (start[1] != finish[1]) and (np.linalg.norm(start - finish) >= self.Rmin)):
                 break
+        # start = [1,1]
+        # finish = [15,18]
         grid[start[0],start[1],1] = self.scale*1.0
         grid[finish[0],finish[1],2] = self.scale*1.0
         done = False
@@ -80,5 +82,5 @@ class Navigate2D:
     
     def render(self,grid):
         #imshow(grid)
-        plot = imshow(grid)
+        # plot = imshow(grid)
         return plot

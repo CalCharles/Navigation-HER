@@ -7,8 +7,8 @@ Created on Tue Jan  8 23:23:01 2019
 
 import torch
 import numpy as np
-from matplotlib.pyplot import imshow
-import matplotlib.pyplot as plt
+# from matplotlib.pyplot import imshow
+# import matplotlib.pyplot as plt
 from smooth_signal import smooth
 from Nav2D import Navigate2D
 from Models import ConvNet
@@ -20,13 +20,13 @@ from collections import deque
 
 
 N = 20
-Nobs = 15
+Nobs = 0
 Dobs = 2
 Rmin = 10
 env = Navigate2D(N,Nobs,Dobs,Rmin)
 gamma = 0.99
 buffer_size = 1000000
-ddqn = True
+ddqn = False
 alg = DQN_HER(env, gamma, buffer_size, ddqn)
 epochs = 15000
 
@@ -51,42 +51,42 @@ for i in range(epochs):
         torch.save(alg.image_mean, 'norm.pt')
 
 
-Y = np.asarray(log.get_log('final_dist'))
-Y2 = smooth(Y)
-x = np.linspace(0, len(Y), len(Y))
-fig1 = plt.figure()
-ax1 = plt.axes()
-ax1.plot(x, Y, Y2)
-plt.xlabel('episodes')
-plt.ylabel('minimum episode distance')
+# Y = np.asarray(log.get_log('final_dist'))
+# Y2 = smooth(Y)
+# x = np.linspace(0, len(Y), len(Y))
+# fig1 = plt.figure()
+# ax1 = plt.axes()
+# ax1.plot(x, Y, Y2)
+# plt.xlabel('episodes')
+# plt.ylabel('minimum episode distance')
 
-Y = np.asarray(log.get_log('avg_loss'))
-Y2 = smooth(Y)
-x = np.linspace(0, len(Y), len(Y))
-fig2 = plt.figure()
-ax2 = plt.axes()
-ax2.plot(x, Y, Y2)
-plt.xlabel('episodes')
-plt.ylabel('average loss')
+# Y = np.asarray(log.get_log('avg_loss'))
+# Y2 = smooth(Y)
+# x = np.linspace(0, len(Y), len(Y))
+# fig2 = plt.figure()
+# ax2 = plt.axes()
+# ax2.plot(x, Y, Y2)
+# plt.xlabel('episodes')
+# plt.ylabel('average loss')
 
-Y = np.asarray(log.get_log('tot_return'))
-Y2 = smooth(Y)
-x = np.linspace(0, len(Y), len(Y))
-fig3 = plt.figure()
-ax3 = plt.axes()
-ax3.plot(x, Y, Y2)
-plt.xlabel('episodes')
-plt.ylabel('episode return')
+# Y = np.asarray(log.get_log('tot_return'))
+# Y2 = smooth(Y)
+# x = np.linspace(0, len(Y), len(Y))
+# fig3 = plt.figure()
+# ax3 = plt.axes()
+# ax3.plot(x, Y, Y2)
+# plt.xlabel('episodes')
+# plt.ylabel('episode return')
 
 
-Y = np.asarray(log.get_log('final_dist'))
-Y[Y > 1] = 1.0
-Y = 1 - Y
-K = 100
-Y2 = smooth(Y,window_len=K)
-x = np.linspace(0, len(Y2), len(Y2))
-fig3 = plt.figure()
-ax3 = plt.axes()
-ax3.plot(x,Y2)
-plt.xlabel('episodes')
-plt.ylabel('success rate')
+# Y = np.asarray(log.get_log('final_dist'))
+# Y[Y > 1] = 1.0
+# Y = 1 - Y
+# K = 100
+# Y2 = smooth(Y,window_len=K)
+# x = np.linspace(0, len(Y2), len(Y2))
+# fig3 = plt.figure()
+# ax3 = plt.axes()
+# ax3.plot(x,Y2)
+# plt.xlabel('episodes')
+# plt.ylabel('success rate')

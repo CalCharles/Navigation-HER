@@ -13,6 +13,7 @@ import random
 from log_utils import logger, mean_val
 from HER import HER
 from copy import deepcopy as dc
+import cv2
 
 
 
@@ -73,10 +74,11 @@ class DQN_HER:
                 min_dist = dist
             if (t+1) == max_t:
                 done = True
-            
+            cv2.imshow('Example - Show image in window',obs * 255)
+            cv2.waitKey(10)
             self.replay_buffer.append([dc(state.squeeze(0).numpy()),dc(action),dc(reward),dc(new_state.squeeze(0).numpy()),dc(done)])
             self.her.keep([state.squeeze(0).numpy(),action,reward,new_state.squeeze(0).numpy(),done])
-            loss = self.update_model()
+            loss, q_vals = self.update_model()
             mean_loss.append(loss)
             state = dc(new_state)
             obs = dc(new_obs)
@@ -86,6 +88,7 @@ class DQN_HER:
                 self.target_model.load_state_dict(self.model.state_dict())
                 self.step_counter = 0
                 print('updated target model')
+        print("Qvals", q_vals[0], q_vals.grad[0])
         her_list = self.her.backward()
         for item in her_list:
             self.replay_buffer.append(item)
@@ -128,6 +131,8 @@ class DQN_HER:
         S0 = torch.tensor( S0, dtype=torch.float)
         self.image_mean = S0.mean(dim=0).cuda()
         self.image_std = S0.std(dim=0).cuda()
+        # np.set_printoptions(precision=3, threshold=np.inf)
+        # print(self.image_mean.tolist())
         
     def norm(self,state):
         return state - self.image_mean
@@ -153,10 +158,11 @@ class DQN_HER:
         else:
             target_q = R1.squeeze().cuda() + self.gamma*self.target_model(S1).max(dim=1)[0].detach()*(1 - D1.cuda())
         policy_q = self.model(S0).gather(1,A0.cuda())
+        policy_q.retain_grad()
         L = F.smooth_l1_loss(policy_q.squeeze(),target_q.squeeze())
         L.backward()
         self.optimizer.step()
-        return L.detach().item()
+        return L.detach().item(), policy_q
     
     def run_epoch(self):
         self.run_episode()
